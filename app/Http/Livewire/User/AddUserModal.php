@@ -10,6 +10,7 @@ use Spatie\Permission\Models\Role;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Password;
+;
 
 class AddUserModal extends Component
 {
@@ -20,6 +21,7 @@ class AddUserModal extends Component
     public $role;
     public $avatar;
     public $saved_avatar;
+    
 
     public $edit_mode = false;
 
@@ -37,6 +39,9 @@ class AddUserModal extends Component
 
     public function render()
     {
+       
+        
+       
         $roles = Role::all();
 
         $roles_description = [
@@ -47,9 +52,16 @@ class AddUserModal extends Component
             'trial' => 'Best for people who need to preview content data, but don\'t need to make any updates',
         ];
 
+       // Assuming you have a $user property that represents the user being edited
+        if (isset($this->user) && $this->user->hasRole('administrator')) {
+            // Only show the administrator role if the user being edited is an admin
+            $roles = $roles->filter(fn($role) => $role->name === 'administrator');
+        }
+
         foreach ($roles as $i => $role) {
             $roles[$i]->description = $roles_description[$role->name] ?? '';
         }
+
 
         return view('livewire.user.add-user-modal', compact('roles'));
     }
